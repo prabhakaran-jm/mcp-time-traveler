@@ -18,7 +18,7 @@ export type {
 // MCP-specific types
 export interface VersionEntry {
   version: string;
-  releaseDate: string;
+  date: string;
 }
 
 // Aliases for clarity in MCP context

@@ -62,7 +62,7 @@ async function fetchPackageVersion(
   language: string,
   packageName: string,
   year: number
-): Promise<{ version: string; confidence: number }> {
+): Promise<{ version: string; confidence: number } | null> {
   let versions;
   
   if (language === "node") {
@@ -76,6 +76,9 @@ async function fetchPackageVersion(
   }
   
   const picked = pickVersionByYear(versions, year);
+  if (!picked) {
+    return null;
+  }
   return { version: picked.version, confidence: picked.confidence };
 }
 
@@ -86,16 +89,22 @@ export async function getHistoricalStack(request: StackRequest): Promise<StackRe
   const packageManager = PACKAGE_MANAGERS[language]?.[year] || "unknown";
   
   const packages: Package[] = [];
+  const lowConfidencePackages: string[] = [];
   
   if (framework !== "none") {
     try {
-      const { version, confidence } = await fetchPackageVersion(language, framework, year);
-      packages.push({
-        name: framework,
-        version,
-        category: "core",
-        notes: `${framework} framework (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
+      const result = await fetchPackageVersion(language, framework, year);
+      if (result) {
+        packages.push({
+          name: framework,
+          version: result.version,
+          category: "core",
+          notes: `${framework} framework`
+        });
+        if (result.confidence < 0.7) {
+          lowConfidencePackages.push(framework);
+        }
+      }
     } catch (error) {
       packages.push({
         name: framework,
@@ -106,58 +115,21 @@ export async function getHistoricalStack(request: StackRequest): Promise<StackRe
     }
   }
   
-  if (language === "node" && framework === "express") {
-    try {
-      const { version, confidence } = await fetchPackageVersion(language, "mongoose", year);
-      packages.push({
-        name: "mongoose",
-        version,
-        category: "orm",
-        notes: `MongoDB ODM (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
-    } catch (error) {
-      console.error("Failed to fetch mongoose:", error);
-    }
-  }
-  
-  if (language === "python" && framework === "django") {
-    try {
-      const { version, confidence } = await fetchPackageVersion(language, "django", year);
-      packages.push({
-        name: "django",
-        version,
-        category: "core",
-        notes: `Django framework (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
-    } catch (error) {
-      console.error("Failed to fetch django:", error);
-    }
-  }
-  
-  if (language === "ruby" && framework === "rails") {
-    try {
-      const { version, confidence } = await fetchPackageVersion(language, "rails", year);
-      packages.push({
-        name: "rails",
-        version,
-        category: "core",
-        notes: `Rails framework (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
-    } catch (error) {
-      console.error("Failed to fetch rails:", error);
-    }
-  }
-  
   if (extras.includes("testing")) {
     const testPkg = language === "node" ? "jest" : language === "python" ? "pytest" : "rspec";
     try {
-      const { version, confidence } = await fetchPackageVersion(language, testPkg, year);
-      packages.push({
-        name: testPkg,
-        version,
-        category: "testing",
-        notes: `Testing framework (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
+      const result = await fetchPackageVersion(language, testPkg, year);
+      if (result) {
+        packages.push({
+          name: testPkg,
+          version: result.version,
+          category: "testing",
+          notes: "Testing framework"
+        });
+        if (result.confidence < 0.7) {
+          lowConfidencePackages.push(testPkg);
+        }
+      }
     } catch (error) {
       console.error(`Failed to fetch ${testPkg}:`, error);
     }
@@ -165,20 +137,27 @@ export async function getHistoricalStack(request: StackRequest): Promise<StackRe
   
   if (extras.includes("orm") && language === "node") {
     try {
-      const { version, confidence } = await fetchPackageVersion(language, "sequelize", year);
-      packages.push({
-        name: "sequelize",
-        version,
-        category: "orm",
-        notes: `SQL ORM (confidence: ${(confidence * 100).toFixed(0)}%)`
-      });
+      const result = await fetchPackageVersion(language, "sequelize", year);
+      if (result) {
+        packages.push({
+          name: "sequelize",
+          version: result.version,
+          category: "orm",
+          notes: "SQL ORM"
+        });
+        if (result.confidence < 0.7) {
+          lowConfidencePackages.push("sequelize");
+        }
+      }
     } catch (error) {
       console.error("Failed to fetch sequelize:", error);
     }
   }
   
-  const notes = `${language} ${runtimeVersion} was the stable version in ${year}. ` +
-    `${framework !== "none" ? `${framework} was widely used.` : ""}`;
+  let notes = `${language} ${runtimeVersion} was the stable version in ${year}.`;
+  if (lowConfidencePackages.length > 0) {
+    notes += ` Note: ${lowConfidencePackages.join(", ")} may not have existed in ${year}.`;
+  }
   
   return {
     language,

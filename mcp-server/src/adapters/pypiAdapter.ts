@@ -2,7 +2,7 @@ import axios from "axios";
 import { VersionEntry } from "../core/types.js";
 
 interface PypiRelease {
-  upload_time: string;
+  upload_time_iso_8601: string;
 }
 
 interface PypiResponse {
@@ -26,11 +26,11 @@ export async function fetchPypiPackageVersions(
       if (releases.length === 0) {
         continue;
       }
-      const uploadTime = releases[0].upload_time;
-      entries.push({ version, releaseDate: uploadTime.split("T")[0] });
+      const uploadTime = releases[0].upload_time_iso_8601;
+      entries.push({ version, date: uploadTime.split("T")[0] });
     }
 
-    entries.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
+    entries.sort((a, b) => a.date.localeCompare(b.date));
 
     return entries;
   } catch (error) {

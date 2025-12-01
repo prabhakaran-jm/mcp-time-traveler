@@ -19,10 +19,10 @@ export async function fetchRubyGemsPackageVersions(
 
     const entries: VersionEntry[] = response.data.map((item) => ({
       version: item.number,
-      releaseDate: item.created_at.split("T")[0]
+      date: item.created_at.split("T")[0]
     }));
 
-    entries.sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
+    entries.sort((a, b) => a.date.localeCompare(b.date));
 
     return entries;
   } catch (error) {

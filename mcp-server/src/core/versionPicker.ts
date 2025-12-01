@@ -3,41 +3,39 @@ import { VersionEntry } from "./types.js";
 export function pickVersionByYear(
   versions: VersionEntry[],
   targetYear: number
-): VersionEntry & { confidence: number } {
+): (VersionEntry & { confidence: number }) | null {
   if (versions.length === 0) {
-    throw new Error("No versions available");
+    return null;
   }
 
   const targetEndDate = new Date(`${targetYear}-12-31`);
 
   const eligibleVersions = versions.filter((v) => {
-    const releaseDate = new Date(v.releaseDate);
+    const releaseDate = new Date(v.date);
     return releaseDate <= targetEndDate;
   });
 
   if (eligibleVersions.length > 0) {
     eligibleVersions.sort((a, b) => {
-      const dateA = new Date(a.releaseDate);
-      const dateB = new Date(b.releaseDate);
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
       return dateB.getTime() - dateA.getTime();
     });
 
-    const latest = eligibleVersions[0];
     return {
-      ...latest,
+      ...eligibleVersions[0],
       confidence: 0.9
     };
   }
 
-  versions.sort((a, b) => {
-    const dateA = new Date(a.releaseDate);
-    const dateB = new Date(b.releaseDate);
+  const sortedVersions = [...versions].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
     return dateA.getTime() - dateB.getTime();
   });
 
-  const earliest = versions[0];
   return {
-    ...earliest,
+    ...sortedVersions[0],
     confidence: 0.5
   };
 }
@@ -49,7 +47,7 @@ export function pickVersionForYear(
   const targetYearStr = targetYear.toString();
   
   const matchingVersions = versions.filter(v => 
-    v.releaseDate.startsWith(targetYearStr)
+    v.date.startsWith(targetYearStr)
   );
   
   if (matchingVersions.length === 0) {
@@ -57,7 +55,7 @@ export function pickVersionForYear(
   }
   
   matchingVersions.sort((a, b) => 
-    b.releaseDate.localeCompare(a.releaseDate)
+    b.date.localeCompare(a.date)
   );
   
   return matchingVersions[0].version;
