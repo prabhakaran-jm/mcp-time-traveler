@@ -1,0 +1,88 @@
+import type { Language, Framework, ExtraCategory, StackRequest, ErrorResponse } from "../types/stack.js";
+
+const VALID_LANGUAGES: Language[] = ["node", "python", "ruby"];
+const VALID_FRAMEWORKS: Framework[] = ["express", "django", "flask", "rails", "none"];
+const VALID_EXTRAS: ExtraCategory[] = ["testing", "orm", "auth", "api", "frontend"];
+const MIN_YEAR = 2015;
+const MAX_YEAR = 2025;
+
+export function validateStackRequest(input: unknown): StackRequest | ErrorResponse {
+  if (!input || typeof input !== "object") {
+    return {
+      error: "invalid_input",
+      message: "Request body must be an object"
+    };
+  }
+
+  const req = input as Record<string, unknown>;
+
+  if (!req.language || typeof req.language !== "string") {
+    return {
+      error: "invalid_input",
+      message: "Missing or invalid 'language' field"
+    };
+  }
+
+  if (!VALID_LANGUAGES.includes(req.language as Language)) {
+    return {
+      error: "invalid_input",
+      message: `Invalid language. Must be one of: ${VALID_LANGUAGES.join(", ")}`
+    };
+  }
+
+  if (!req.framework || typeof req.framework !== "string") {
+    return {
+      error: "invalid_input",
+      message: "Missing or invalid 'framework' field"
+    };
+  }
+
+  if (!VALID_FRAMEWORKS.includes(req.framework as Framework)) {
+    return {
+      error: "invalid_input",
+      message: `Invalid framework. Must be one of: ${VALID_FRAMEWORKS.join(", ")}`
+    };
+  }
+
+  if (!req.year || typeof req.year !== "number") {
+    return {
+      error: "invalid_input",
+      message: "Missing or invalid 'year' field"
+    };
+  }
+
+  if (req.year < MIN_YEAR || req.year > MAX_YEAR) {
+    return {
+      error: "year_out_of_range",
+      message: `Year must be between ${MIN_YEAR} and ${MAX_YEAR}`,
+      details: { min: MIN_YEAR, max: MAX_YEAR, provided: req.year }
+    };
+  }
+
+  let extras: ExtraCategory[] = [];
+  if (req.extras) {
+    if (!Array.isArray(req.extras)) {
+      return {
+        error: "invalid_input",
+        message: "'extras' must be an array"
+      };
+    }
+
+    for (const extra of req.extras) {
+      if (typeof extra !== "string" || !VALID_EXTRAS.includes(extra as ExtraCategory)) {
+        return {
+          error: "invalid_input",
+          message: `Invalid extra category. Must be one of: ${VALID_EXTRAS.join(", ")}`
+        };
+      }
+    }
+    extras = req.extras as ExtraCategory[];
+  }
+
+  return {
+    language: req.language as Language,
+    framework: req.framework as Framework,
+    year: req.year,
+    extras
+  };
+}
