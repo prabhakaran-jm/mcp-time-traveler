@@ -1,0 +1,7 @@
+{
+  "name": "@mcp-time-traveler/shared-types",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./stack.js",
+  "types": "./stack.ts"
+}

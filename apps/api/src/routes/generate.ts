@@ -33,6 +33,12 @@ router.post("/generate", async (req: Request, res: Response): Promise<void> => {
     };
 
     const result = await requestHistoricalStack(stackRequest);
+    
+    if ("error" in result) {
+      res.status(500).json(result);
+      return;
+    }
+    
     res.json(result);
   } catch (error) {
     res.status(500).json({

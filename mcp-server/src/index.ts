@@ -6,7 +6,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { getHistoricalStack } from "./tools/getHistoricalStack.js";
-import { StackRequest } from "./types/stack.js";
+import { StackRequest } from "./core/types.js";
 
 const server = new Server(
   {
@@ -79,7 +79,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
     
-    const result = getHistoricalStack(args);
+    const result = await getHistoricalStack(args);
     
     return {
       content: [

@@ -1,6 +1,8 @@
-import { StackRequest, StackResponse, Package } from "../types/stack.js";
-import { pickVersionForYear } from "../core/versionPicker.js";
-import { getPackageVersions } from "../adapters/npmAdapter.js";
+import { StackRequest, StackResponse, Package } from "../core/types.js";
+import { pickVersionByYear } from "../core/versionPicker.js";
+import { fetchNpmPackageVersions } from "../adapters/npmAdapter.js";
+import { fetchPypiPackageVersions } from "../adapters/pypiAdapter.js";
+import { fetchRubyGemsPackageVersions } from "../adapters/rubygemsAdapter.js";
 
 const RUNTIME_VERSIONS: Record<string, Record<number, string>> = {
   node: {
@@ -56,7 +58,28 @@ const PACKAGE_MANAGERS: Record<string, Record<number, string>> = {
   }
 };
 
-export function getHistoricalStack(request: StackRequest): StackResponse {
+async function fetchPackageVersion(
+  language: string,
+  packageName: string,
+  year: number
+): Promise<{ version: string; confidence: number }> {
+  let versions;
+  
+  if (language === "node") {
+    versions = await fetchNpmPackageVersions(packageName);
+  } else if (language === "python") {
+    versions = await fetchPypiPackageVersions(packageName);
+  } else if (language === "ruby") {
+    versions = await fetchRubyGemsPackageVersions(packageName);
+  } else {
+    throw new Error(`Unsupported language: ${language}`);
+  }
+  
+  const picked = pickVersionByYear(versions, year);
+  return { version: picked.version, confidence: picked.confidence };
+}
+
+export async function getHistoricalStack(request: StackRequest): Promise<StackResponse> {
   const { language, framework, year, extras = [] } = request;
   
   const runtimeVersion = RUNTIME_VERSIONS[language]?.[year] || "unknown";
@@ -65,38 +88,93 @@ export function getHistoricalStack(request: StackRequest): StackResponse {
   const packages: Package[] = [];
   
   if (framework !== "none") {
-    const versions = getPackageVersions(framework);
-    const version = pickVersionForYear(versions, year) || "latest";
-    packages.push({
-      name: framework,
-      version,
-      category: "core",
-      notes: `${framework} framework for ${language}`
-    });
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, framework, year);
+      packages.push({
+        name: framework,
+        version,
+        category: "core",
+        notes: `${framework} framework (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      packages.push({
+        name: framework,
+        version: "unknown",
+        category: "core",
+        notes: `Failed to fetch: ${error instanceof Error ? error.message : "Unknown error"}`
+      });
+    }
+  }
+  
+  if (language === "node" && framework === "express") {
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, "mongoose", year);
+      packages.push({
+        name: "mongoose",
+        version,
+        category: "orm",
+        notes: `MongoDB ODM (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      console.error("Failed to fetch mongoose:", error);
+    }
+  }
+  
+  if (language === "python" && framework === "django") {
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, "django", year);
+      packages.push({
+        name: "django",
+        version,
+        category: "core",
+        notes: `Django framework (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      console.error("Failed to fetch django:", error);
+    }
+  }
+  
+  if (language === "ruby" && framework === "rails") {
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, "rails", year);
+      packages.push({
+        name: "rails",
+        version,
+        category: "core",
+        notes: `Rails framework (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      console.error("Failed to fetch rails:", error);
+    }
   }
   
   if (extras.includes("testing")) {
-    const testPkg = language === "node" ? "jest" : "pytest";
-    const versions = getPackageVersions(testPkg);
-    const version = pickVersionForYear(versions, year) || "latest";
-    packages.push({
-      name: testPkg,
-      version,
-      category: "testing",
-      notes: "Testing framework"
-    });
+    const testPkg = language === "node" ? "jest" : language === "python" ? "pytest" : "rspec";
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, testPkg, year);
+      packages.push({
+        name: testPkg,
+        version,
+        category: "testing",
+        notes: `Testing framework (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      console.error(`Failed to fetch ${testPkg}:`, error);
+    }
   }
   
-  if (extras.includes("orm")) {
-    const ormPkg = language === "node" ? "sequelize" : "sqlalchemy";
-    const versions = getPackageVersions(ormPkg);
-    const version = pickVersionForYear(versions, year) || "latest";
-    packages.push({
-      name: ormPkg,
-      version,
-      category: "orm",
-      notes: "ORM for database access"
-    });
+  if (extras.includes("orm") && language === "node") {
+    try {
+      const { version, confidence } = await fetchPackageVersion(language, "sequelize", year);
+      packages.push({
+        name: "sequelize",
+        version,
+        category: "orm",
+        notes: `SQL ORM (confidence: ${(confidence * 100).toFixed(0)}%)`
+      });
+    } catch (error) {
+      console.error("Failed to fetch sequelize:", error);
+    }
   }
   
   const notes = `${language} ${runtimeVersion} was the stable version in ${year}. ` +
