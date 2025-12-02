@@ -199,3 +199,10 @@ Before committing, verify:
 - **Trailing commas**: Use them in multi-line arrays/objects
 
 Let Prettier handle formatting automatically.
+
+## Architectural principles
+
+- Adapters stay stateless and pure.
+- Shared types do not contain logic, only data shapes.
+- The API does not call registries directly; it always goes through the MCP layer.
+- UI components stay presentational; data fetching lives in hooks or services.

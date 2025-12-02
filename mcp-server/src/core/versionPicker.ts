@@ -1,3 +1,6 @@
+// AI-GEN: Implemented with Kiro from the spec in .kiro/specs/mcp-spec.md.
+// AI-GEN: This function picks the latest version published on or before the target year.
+// It hides the complexity of comparing release dates across npm, PyPI, and RubyGems.
 import { VersionEntry } from "./types.js";
 
 export function pickVersionByYear(
