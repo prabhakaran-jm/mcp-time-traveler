@@ -2,7 +2,7 @@
 
 > Travel back in time to recreate historically accurate developer environments
 
-[![Kiroween 2025](https://img.shields.io/badge/Kiroween-2024-purple)](https://kiro.ai)
+[![Kiroween 2025](https://img.shields.io/badge/Kiroween-2025-purple)](https://kiro.ai)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![MCP](https://img.shields.io/badge/MCP-Server-orange)](https://modelcontextprotocol.io/)
 
@@ -389,9 +389,9 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Credits
 
-**Built for Kiroween Hackathon 2024** 🎃
+**Built for Kiroween Hackathon 2025** 🎃
 
-**Author:** [Your Name]
+**Author:** Prabhakaran Jayaraman Masani
 
 **Powered by:**
 - [Kiro AI](https://kiro.ai) - AI-powered IDE
@@ -404,4 +404,4 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-*Made with 👻 and ☕ during Kiroween 2024*
+*Made with 👻 and ☕ during Kiroween 2025*
