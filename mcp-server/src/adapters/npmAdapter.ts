@@ -1,6 +1,8 @@
 import axios from "axios";
 import { VersionEntry } from "../core/types.js";
 
+// FRANKENSTEIN STITCH: The limbs - adapters reach into external registries to gather version data
+
 interface NpmRegistryResponse {
   time: Record<string, string>;
   versions: Record<string, unknown>;

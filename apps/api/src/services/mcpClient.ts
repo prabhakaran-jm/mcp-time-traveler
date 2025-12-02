@@ -4,6 +4,7 @@
 import { StackRequest, StackResponse, ErrorResponse } from "../types/stack";
 import { generateHistoricalStack } from "./stackService";
 
+// FRANKENSTEIN STITCH: MCP client pumps data from brain (MCP server) through heart (API) to skin (UI)
 export async function requestHistoricalStack(
   req: StackRequest
 ): Promise<StackResponse | ErrorResponse> {

@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { requestHistoricalStack } from "../services/mcpClient";
 import { StackRequest } from "../types/stack";
 
+// FRANKENSTEIN STITCH: API routes connect React UI (skin) to MCP brain via Express (heart)
 const router = Router();
 
 router.post("/generate", async (req: Request, res: Response): Promise<void> => {

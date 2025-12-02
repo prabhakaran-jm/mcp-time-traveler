@@ -1,5 +1,6 @@
 // Types for MCP Time-Traveler API
 // Note: Duplicated from shared/types/stack.ts for CommonJS compatibility
+// Schema defined in .kiro/specs/mcp-spec.md - Input/Output schemas section
 
 export type Language = "node" | "python" | "ruby";
 

@@ -7,6 +7,7 @@ import { fetchNpmPackageVersions } from "../adapters/npmAdapter.js";
 import { fetchPypiPackageVersions } from "../adapters/pypiAdapter.js";
 import { fetchRubyGemsPackageVersions } from "../adapters/rubygemsAdapter.js";
 
+// Implementation follows .kiro/specs/mcp-spec.md - Version Selection Rules by Year
 const RUNTIME_VERSIONS: Record<string, Record<number, string>> = {
   node: {
     2020: "14.15.0",

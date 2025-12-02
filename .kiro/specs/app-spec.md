@@ -1,3 +1,11 @@
+---
+name: app-spec
+title: MCP Time-Traveler Application
+description: Full-stack application for generating historically accurate technology stacks
+status: complete
+version: 1.0.0
+---
+
 # MCP Time-Traveler - Application Specification
 
 ## Purpose

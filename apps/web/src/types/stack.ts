@@ -1,5 +1,6 @@
 // Local type definitions for web frontend
 // No cross-package imports for Vite compatibility
+// Schema matches .kiro/specs/mcp-spec.md - Input/Output schemas
 
 export type Language = "node" | "python" | "ruby";
 

@@ -38,6 +38,19 @@ A 3-minute walkthrough of MCP Time-Traveler, including:
 
 > **Note**: Replace `YOUR_VIDEO_ID_HERE` with your actual YouTube video ID before submission.
 
+## 📸 Screenshots
+
+![Main UI Interface](./docs/ui-example.png)
+*Environment form with language, framework, and year selection*
+
+![Haunted Mode Feature](./docs/haunted-mode.png)
+*Haunted Mode highlights packages with uncertain version data*
+
+![MCP Integration](./docs/mcp-integration.png)
+*MCP server configuration in Kiro IDE*
+
+> See [docs/SCREENSHOTS.md](./docs/SCREENSHOTS.md) for a complete guide on capturing and adding screenshots.
+
 ## Overview
 
 **MCP Time-Traveler** is a Kiroween hackathon project that generates historically accurate technology stacks for any year between 2015-2025. It fetches real package versions from npm, PyPI, and RubyGems registries, applies intelligent version-picking algorithms, and presents results with confidence scoring.
@@ -130,6 +143,8 @@ MCP Time-Traveler stitches together:
 ```
 
 Each piece was built separately, then wired together with Kiro's specs, hooks, and steering until the creature came alive as a single system.
+
+📐 **[See the full Frankenstein Architecture diagram](./docs/frankenstein-architecture.md)**
 
 ## How It Works
 
@@ -496,6 +511,7 @@ This project was built entirely using **Kiro AI** as the primary development too
 
 ### 🎨 Steering Documents
 - [Coding Style Guide](./.kiro/steering/coding-style.md) – steering doc that keeps generated code consistent
+- [API Conventions](./.kiro/steering/api-conventions.md) – REST patterns, error handling, and validation standards
 - Enforces small functions, clear naming, and TypeScript conventions
 - Guides all code generation for consistency
 

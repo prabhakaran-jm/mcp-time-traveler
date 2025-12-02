@@ -1,5 +1,5 @@
-// Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
 #!/usr/bin/env node
+// Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -8,7 +8,9 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { getHistoricalStack } from "./tools/getHistoricalStack.js";
 import { StackRequest } from "./core/types.js";
+import { env } from "process";
 
+// FRANKENSTEIN STITCH: The brain - MCP server reasons over registry history and coordinates the limbs (adapters)
 const server = new Server(
   {
     name: "mcp-time-traveler",

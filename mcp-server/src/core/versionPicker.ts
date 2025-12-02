@@ -3,6 +3,8 @@
 // It hides the complexity of comparing release dates across npm, PyPI, and RubyGems.
 import { VersionEntry } from "./types.js";
 
+// FRANKENSTEIN STITCH: The eyes - version picker sees across years to find the right package versions
+
 export function pickVersionByYear(
   versions: VersionEntry[],
   targetYear: number

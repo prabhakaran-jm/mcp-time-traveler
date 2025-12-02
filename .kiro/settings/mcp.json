@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "time-traveler": {
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "description": "MCP Time-Traveler server for historical stack generation",
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

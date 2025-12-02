@@ -1,96 +1,61 @@
-# Development Log – MCP Time-Traveler + Kiro
+# Development Log - MCP Time-Traveler
 
-Built in December 2025 as a solo developer using Kiro as the primary IDE.
+## Vibe Coding Examples
 
-## Major Kiro Sessions
+This project was built using Kiro's vibe coding approach. Here are key examples of natural language prompts that generated code:
 
-- Session 1: Generated the initial monorepo scaffold (apps/api, apps/web, mcp-server, shared/types)
-  - Used `gen:scaffold` hook to generate base structure from specs
-  - Vibe coding: "Create a monorepo with Express API, React frontend, and MCP server"
-  
-- Session 2: Refined app-spec and mcp-spec, regenerated types and handlers
-  - Ran `gen:scaffold` hook after spec updates to sync TypeScript types
-  - Vibe coding: "Update StackRequest type to match the new spec with optional extras array"
-  - Pre-commit hook caught 2 type errors before commit
-  
-- Session 3: Implemented registry adapters for npm, PyPI, and RubyGems
-  - Vibe coding: "Create adapters that fetch version history from npm, PyPI, and RubyGems APIs"
-  - Followed steering doc: small functions, early returns, clear error handling
-  
-- Session 4: Built the React Kiroween UI, including Haunted Mode
-  - Vibe coding: "Add a haunted mode toggle that highlights low-confidence packages with warning icons"
-  - Generated ResultPanel component with haunted styling based on spec requirements
-  
-- Session 5: Wired up the MCP server and API integration
-  - Vibe coding: "Connect the Express API to call the MCP server for stack generation"
-  - Pre-commit hook validated all TypeScript types before integration commit
-  
-- Session 6: Deployment fixes for Heroku (API) and Vercel (web)
-  - Fixed build scripts and environment variables
-  - Pre-commit hook ensured no type errors before deployment
+### Example 1: MCP Server Scaffolding
+**Prompt:** "Create a TypeScript MCP server that exposes a get_historical_stack tool. It should query npm registry for package versions and return them sorted by date."
 
-## Hook Usage Summary
+**Result:** Generated `mcp-server/src/index.ts` with MCP SDK integration and `mcp-server/src/adapters/npmAdapter.ts` with axios-based registry queries.
 
-- **gen:scaffold**: Used in Sessions 1 and 2 to generate/update project structure from specs
-- **pre-commit**: Used regularly (Sessions 2, 5, 6) to catch type errors before commits
-  - Caught 2 type errors in Session 2
-  - Validated all modules before integration in Session 5
-  - Ensured clean build before deployment in Session 6
+### Example 2: Version Picker Algorithm
+**Prompt:** "Implement a version picker that filters package versions by year. If versions exist in that year, pick the latest with confidence 0.9. Otherwise, fall back to earliest version with confidence 0.5."
 
-### Hook Execution Examples
+**Result:** Generated `mcp-server/src/core/versionPicker.ts` with `pickVersionByYear` function implementing the confidence scoring logic.
 
-**Session 1 - gen:scaffold hook output:**
-```
-Reading specs from .kiro/specs/app-spec.md and mcp-spec.md...
-Generating project structure:
-✓ Created apps/api/src/server.ts
-✓ Created apps/api/src/routes/generate.ts
-✓ Created apps/web/src/main.tsx
-✓ Created mcp-server/src/index.ts
-✓ Created shared/types/stack.ts
-✓ Generated TypeScript types matching spec schemas
-All scaffolding complete. Ready for implementation.
-```
+### Example 3: Kiroween Theme
+**Prompt:** "Apply a Kiroween theme to the web app: dark background (#1a1a2e), purple (#7b2cbf) and orange (#ff6b35) accents, gradient buttons, and spooky emojis in the header."
 
-**Session 2 - pre-commit hook output:**
-```
-Running pre-commit checks...
-Checking apps/api...
-apps/api/src/routes/generate.ts:12:5 - error TS2322: Type 'string' is not assignable to type 'Language'.
-Checking mcp-server...
-Checking apps/web...
-✗ Pre-commit failed: 2 type errors found
-Fix errors before committing.
-```
+**Result:** Updated `apps/web/src/styles.css` with complete dark theme and `apps/web/src/pages/Home.tsx` with ghost 👻 and pumpkin 🎃 icons.
 
-**Session 5 - pre-commit hook output (success):**
-```
-Running pre-commit checks...
-Checking apps/api...
-✓ No type errors
-Checking mcp-server...
-✓ No type errors
-Checking apps/web...
-✓ No type errors
-All checks passed!
-```
+### Example 4: Haunted Mode Feature
+**Prompt:** "Add a 'Haunted Mode' toggle. When enabled, highlight packages with confidence < 0.8 with orange borders and warning icons."
 
-### Additional Vibe Coding Examples
+**Result:** Generated toggle in `apps/web/src/pages/Home.tsx`, updated `apps/web/src/components/ResultPanel.tsx` with conditional styling, and added CSS rules for `.haunted` class.
 
-**Session 1.5** (between Sessions 1 and 2):
-- Prompt: "The spec says StackRequest should have an optional extras array. Can you update the type definition and regenerate the API route handler?"
-- Result: Kiro updated `shared/types/stack.ts` and regenerated `apps/api/src/routes/generate.ts` to handle the new field
+### Example 5: API Integration
+**Prompt:** "Create an Express API with a POST /api/generate endpoint that validates input (language, framework, year 2015-2025) and returns historical stack data."
 
-**Session 3.5** (registry adapter refinement):
-- Prompt: "The npm adapter is working but PyPI returns dates in a different format. Can you handle both ISO dates and 'YYYY-MM-DD' strings?"
-- Result: Kiro updated `pypiAdapter.ts` to normalize date formats, following the steering doc's error handling patterns
+**Result:** Generated `apps/api/src/routes/generate.ts` with validation logic and `apps/api/src/services/stackService.ts` with version mapping data.
 
-**Session 4.5** (UI polish):
-- Prompt: "The haunted mode warnings look good, but can you make the warning icon pulse slightly to draw attention?"
-- Result: Kiro added CSS animation to `.warning-icon` with subtle pulse effect
+### Example 6: Shared Types
+**Prompt:** "Create shared TypeScript types for StackRequest, StackResponse, and StackPackage that work across API, web, and MCP server."
 
-**Session 5.5** (MCP integration debugging):
-- Prompt: "The MCP server works when I test it directly, but the API can't connect. The error says 'spawn node ENOENT'. What's wrong?"
-- Result: Kiro identified missing path resolution in `mcpClient.ts` and fixed the command execution
+**Result:** Generated `shared/types/stack.ts` with comprehensive type definitions that are re-exported in each module.
 
-Kiro was active in all of these sessions for both code and documentation. The spec-driven approach allowed rapid iteration: update spec → run gen:scaffold → implement → validate with pre-commit.
+## Iterative Refinement
+
+The project evolved through conversational iteration:
+
+1. **Initial scaffold** → Generated basic structure for all three modules
+2. **Type alignment** → Refined shared types to match MCP spec exactly
+3. **Error handling** → Added comprehensive error cases and fallbacks
+4. **UI polish** → Iterated on Kiroween theme and Haunted Mode styling
+5. **Deployment prep** → Updated configs for Heroku and Vercel deployment
+
+## Kiro Features Used
+
+- **Specs**: Created detailed specs first, then generated code to match
+- **Hooks**: Generated hook configs for scaffold regeneration and pre-commit checks
+- **Steering**: Created coding-style.md to guide consistent code generation
+- **MCP**: Built full MCP server with proper SDK integration
+- **Vibe Coding**: All code generated through natural language prompts
+
+## Development Timeline
+
+- **Day 1**: Specs, project structure, MCP server skeleton
+- **Day 2**: API implementation, registry adapters, version picker
+- **Day 3**: React UI, Kiroween theme, Haunted Mode
+- **Day 4**: Integration, deployment, documentation
+- **Day 5**: Polish, testing, hackathon submission prep

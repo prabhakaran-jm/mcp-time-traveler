@@ -1,3 +1,11 @@
+---
+name: mcp-spec
+title: MCP Time-Traveler Tool
+description: MCP server tool for historical stack generation
+status: complete
+version: 1.0.0
+---
+
 # MCP Tool Specification - Time-Traveler
 
 ## Tool: get_historical_stack
