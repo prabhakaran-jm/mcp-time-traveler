@@ -1,33 +1,52 @@
 import { useState } from "react";
-import { StackRequest } from "../types/stack";
+import { StackResponse, ErrorResponse } from "../types/stack";
 
 interface EnvironmentFormProps {
-  onSubmit: (request: StackRequest) => Promise<void>;
-  loading: boolean;
+  onResult: (result: StackResponse | ErrorResponse) => void;
 }
 
-export default function EnvironmentForm({ onSubmit, loading }: EnvironmentFormProps) {
+export default function EnvironmentForm({ onResult }: EnvironmentFormProps) {
   const [language, setLanguage] = useState<"node" | "python" | "ruby">("node");
   const [framework, setFramework] = useState<string>("express");
   const [year, setYear] = useState<number>(2020);
   const [extrasText, setExtrasText] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent): void {
+  async function handleSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const extras = extrasText
       .split(",")
       .map(s => s.trim())
       .filter(s => s.length > 0);
 
-    const request: StackRequest = {
-      language,
-      framework: framework as StackRequest["framework"],
-      year,
-      extras
-    };
+    try {
+      const response = await fetch("http://localhost:4000/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language,
+          framework,
+          year: Number(year),
+          extras
+        })
+      });
 
-    onSubmit(request);
+      const data = await response.json();
+      onResult(data);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMsg);
+      onResult({
+        error: "internal_error",
+        message: errorMsg
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -88,8 +107,10 @@ export default function EnvironmentForm({ onSubmit, loading }: EnvironmentFormPr
       </div>
 
       <button type="submit" disabled={loading}>
-        {loading ? "Generating..." : "Generate Stack"}
+        {loading ? "Loading..." : "Generate Stack"}
       </button>
+
+      {error && <div className="error">{error}</div>}
     </form>
   );
 }

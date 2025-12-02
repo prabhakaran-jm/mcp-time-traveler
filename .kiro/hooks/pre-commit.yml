@@ -1,0 +1,34 @@
+name: pre-commit
+description: Run type checks and tests before committing
+trigger: manual
+
+action:
+  type: command
+  command: |
+    echo "Running pre-commit checks..."
+    
+    # Check apps/api
+    if [ -d "apps/api" ]; then
+      echo "Checking apps/api..."
+      cd apps/api
+      npm run type-check || exit 1
+      cd ../..
+    fi
+    
+    # Check mcp-server
+    if [ -d "mcp-server" ]; then
+      echo "Checking mcp-server..."
+      cd mcp-server
+      npm run type-check || exit 1
+      cd ..
+    fi
+    
+    # Check apps/web
+    if [ -d "apps/web" ]; then
+      echo "Checking apps/web..."
+      cd apps/web
+      npm run type-check || exit 1
+      cd ../..
+    fi
+    
+    echo "All checks passed!"

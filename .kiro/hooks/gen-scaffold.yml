@@ -1,0 +1,29 @@
+name: gen:scaffold
+description: Regenerate or update scaffolding based on specs
+trigger: manual
+
+action:
+  type: message
+  message: |
+    Regenerate project scaffolding based on current specs in .kiro/specs/.
+
+    Read:
+    - .kiro/specs/app-spec.md
+    - .kiro/specs/mcp-spec.md
+    - .kiro/steering/coding-style.md
+
+    Check for missing scaffolding in:
+    - apps/api (Express + TypeScript backend)
+    - apps/web (React + Vite frontend)
+    - mcp-server (MCP tool server)
+
+    Tasks:
+    1. Verify directory structure matches specs
+    2. Check for missing core files (package.json, tsconfig.json, entry points)
+    3. Ensure type definitions match MCP tool schemas
+    4. Verify stub implementations exist for all tools
+    5. Check basic test file structure
+
+    Propose any new files needed. Do not overwrite existing implementation logic, only update structure and types.
+
+    Follow coding-style.md conventions.
