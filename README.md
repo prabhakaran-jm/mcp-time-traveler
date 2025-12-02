@@ -196,6 +196,16 @@ mcp-time-traveler/
 └── LICENSE
 ```
 
+## Spec Compliance
+
+| Spec section                           | Implementation file                                        |
+|----------------------------------------|------------------------------------------------------------|
+| App input/output (StackRequest/Response) | `shared/types/stack.ts` and `apps/api/src/routes/generate.ts` |
+| MCP tool schema (`get_historical_stack`) | `mcp-server/src/index.ts`                                 |
+| Confidence scoring                     | `mcp-server/src/core/versionPicker.ts`                    |
+| Haunted Mode behavior                  | `apps/web/src/components/ResultPanel.tsx` and `apps/web/src/pages/Home.tsx` |
+
+
 ## Getting Started (Local Dev)
 
 ### Prerequisites
@@ -367,10 +377,10 @@ This project was built entirely using **Kiro AI** as the primary development too
 - Used specs as source of truth for code generation
 - Iteratively refined specs based on implementation feedback
 
-### 🪝 Automation Hooks
-- **gen:scaffold** - Regenerates project structure from specs
-- **pre-commit** - Runs type checks before commits
+### 🪝 Hook Usage During Development
 - Hooks defined in `.kiro/hooks/` and triggered via Kiro UI
+- `gen:scaffold` used a few times to keep the structure in sync with specs  
+- `pre-commit` used regularly while coding to run type checks on API, web, and MCP server
 
 ### 🎨 Steering Documents
 - [Coding Style Guide](./.kiro/steering/coding-style.md) – steering doc that keeps generated code consistent
@@ -380,12 +390,14 @@ This project was built entirely using **Kiro AI** as the primary development too
 ### 🤖 MCP Extension
 - Built custom MCP server for Kiro integration
 - Enables conversational queries about historical stacks
-- Demonstrates MCP protocol in
+- Demonstrates MCP protocol in production with real registry integrations across npm, PyPI, and RubyGems.
 
 ### 💬 Vibe Coding
 - Natural language instructions for feature development
 - Iterative refinement through conversation
 - Context-aware code generation
+
+
 
 **Result:** A complete full-stack application built in hours, not days, with consistent code quality and comprehensive documentation.
 

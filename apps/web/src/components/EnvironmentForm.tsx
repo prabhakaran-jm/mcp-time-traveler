@@ -40,11 +40,17 @@ export default function EnvironmentForm({ onResult }: EnvironmentFormProps) {
       const data = await response.json();
       onResult(data);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "Something went wrong";
-      setError(errorMsg);
+      const rawMsg = err instanceof Error ? err.message : "Something went wrong";
+
+      const friendlyMsg =
+        rawMsg === "Failed to fetch"
+          ? "Could not reach the Time-Traveler engine. It might be asleep or unreachable. Try a different year, or check that the backend is running."
+          : rawMsg;
+
+      setError(friendlyMsg);
       onResult({
         error: "internal_error",
-        message: errorMsg
+        message: friendlyMsg
       });
     } finally {
       setLoading(false);
@@ -112,7 +118,21 @@ export default function EnvironmentForm({ onResult }: EnvironmentFormProps) {
         {loading ? "Loading..." : "Generate Stack"}
       </button>
 
-      {error && <div className="error">{error}</div>}
+      {/* New spooky loading message */}
+      {loading && (
+        <div className="mt-4 text-sm text-amber-300">
+          ⏳ Traveling through the code crypts...
+        </div>
+      )}
+
+      {error && (
+        <div className="error mt-4 text-red-400">
+          👻 The spirits encountered a problem:<br />
+          <span className="font-mono text-red-300">{error}</span><br />
+          🪦 Try a different year or adjust your inputs.
+        </div>
+)}
+
     </form>
   );
 }

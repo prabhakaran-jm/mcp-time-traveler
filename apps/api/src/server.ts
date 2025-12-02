@@ -1,3 +1,4 @@
+// Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
 import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";

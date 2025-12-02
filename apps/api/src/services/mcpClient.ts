@@ -1,3 +1,4 @@
+// Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
 import { StackRequest, StackResponse, ErrorResponse } from "../types/stack";
 import { generateHistoricalStack } from "./stackService";
 

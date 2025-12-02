@@ -1,3 +1,4 @@
+// Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
 import { useState } from "react";
 import EnvironmentForm from "../components/EnvironmentForm";
 import ResultPanel from "../components/ResultPanel";
@@ -7,6 +8,9 @@ export default function Home() {
   const [result, setResult] = useState<StackResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hauntedMode, setHauntedMode] = useState(false);
+
+  // NEW 👇
+  const [loading, setLoading] = useState(false);
 
   function handleResult(data: StackResponse | ErrorResponse): void {
     if ("error" in data) {
@@ -37,8 +41,16 @@ export default function Home() {
           </label>
         </div>
 
+        {/* Pass loading setter down to the form */}
         <EnvironmentForm onResult={handleResult} />
-        {error && <div className="error">{error}</div>}
+
+        {/* 🔥 NEW spooky loading message */}
+        {loading && (
+          <div className="mt-4 text-sm text-amber-300">
+            ⏳ Traveling through the code crypts...
+          </div>
+        )}
+
         {result && <ResultPanel result={result} hauntedMode={hauntedMode} />}
       </main>
     </div>
