@@ -2,115 +2,241 @@
 
 ## Purpose
 
-MCP Time-Traveler is a Model Context Protocol (MCP) server that enables AI agents to analyze codebases across different points in their Git history. It allows developers and AI assistants to understand how code evolved, compare implementations across commits, and make informed decisions based on historical context.
+MCP Time-Traveler is a web application and REST API that generates historically accurate technology stacks for any year between 2015-2025. It fetches real package version data from npm, PyPI, and RubyGems registries, applies intelligent version-picking algorithms with confidence scoring, and presents results through a Kiroween-themed web interface.
+
+The system helps developers understand what package versions were available and popular in specific years, enabling accurate recreation of historical development environments.
 
 ## Scope
 
-This MVP provides a read-only MCP server that exposes Git history operations through standardized MCP tools. The server integrates with Kiro and other MCP-compatible AI assistants to answer questions like "How did this function change over time?" or "What did the authentication logic look like 3 months ago?"
-
 ### In Scope
-- Read-only Git operations (log, show, diff, blame)
-- Time-based and commit-based navigation
-- File content retrieval at specific commits
-- Branch and tag listing
-- Multi-language support (Node.js, Python, Ruby)
+- Web UI for selecting language, framework, year, and optional extras
+- REST API that processes stack generation requests
+- MCP server integration for AI assistant queries
+- Real-time package version lookup from public registries (npm, PyPI, RubyGems)
+- Confidence scoring for version recommendations
+- Haunted Mode UI feature for highlighting uncertain data
+- Support for Node.js/Express, Python/Django/Flask, Ruby/Rails
 
 ### Out of Scope
-- Write operations (commit, push, merge)
-- Git configuration changes
-- Repository cloning or initialization
-- Interactive rebase or conflict resolution
+- Package installation or environment setup
+- Version compatibility analysis
+- Security vulnerability scanning
+- Custom package registry support
+- Historical package download statistics
+- Automated testing of generated stacks
 
-## User Stories
+## Supported Stacks
 
-**As a developer**, I want to ask my AI assistant "Show me how the login function changed in the last 6 months" so I can understand the evolution of critical code.
+### Languages & Frameworks
+- **Node.js**: Express
+- **Python**: Django, Flask
+- **Ruby**: Rails
 
-**As a code reviewer**, I want to compare the current implementation with a specific commit to understand what changed and why.
+### Optional Extras
+- Testing frameworks (jest, pytest, rspec)
+- ORMs (sequelize, sqlalchemy, activerecord)
+- Auth libraries
+- API tools
+- Frontend packages
 
-**As a team lead**, I want to trace when a particular bug was introduced by examining file history and blame information.
+## Core Flows
 
-**As a developer**, I want to see what the codebase looked like at a specific release tag to understand production behavior.
+### Flow 1: Generate Historical Stack (Web UI)
 
-## Functional Flow
+1. **User Input**
+   - Selects language from dropdown (Node.js, Python, Ruby)
+   - Selects framework from dropdown (Express, Django, Flask, Rails, None)
+   - Enters target year (2015-2025)
+   - Optionally adds extras (comma-separated: testing, orm, auth)
+   - Optionally enables Haunted Mode toggle
 
-1. **Server Initialization**: MCP server starts and validates Git repository access
-2. **Tool Discovery**: AI agent queries available MCP tools (git_log, git_show, git_diff, git_blame, list_branches)
-3. **Query Execution**: Agent invokes tools with parameters (commit hash, file path, date range)
-4. **Response Formatting**: Server executes Git commands and returns structured JSON responses
-5. **Context Integration**: Agent uses historical data to answer user questions
+2. **API Request**
+   - Web app sends POST to `/api/generate`
+   - Request body: `{ language, framework, year, extras }`
+   - API validates input (year range, valid language/framework)
 
-### Example Interaction
+3. **Stack Generation**
+   - API calls internal stack service
+   - Service queries package registries for version data
+   - Version picker algorithm selects appropriate versions
+   - Confidence scores calculated based on data quality
+
+4. **Response Display**
+   - API returns StackResponse with runtime, packages, notes
+   - Web UI displays results in card layout
+   - If Haunted Mode enabled, low-confidence packages highlighted with ⚠️
+   - User can adjust inputs and regenerate
+
+### Flow 2: Generate Historical Stack (MCP Tool)
+
+1. **AI Query**
+   - User asks AI assistant: "What packages were popular for Node.js in 2020?"
+   - AI assistant invokes `get_historical_stack` MCP tool
+
+2. **MCP Processing**
+   - MCP server receives tool call with parameters
+   - Validates input (year range, language/framework combination)
+   - Queries package registries via adapters
+
+3. **Version Selection**
+   - Fetches all versions with release dates
+   - Filters versions released before/during target year
+   - Picks latest version in range (confidence: 0.9)
+   - Falls back to earliest version if none in range (confidence: 0.5)
+
+4. **Response**
+   - MCP server returns structured JSON
+   - AI assistant formats response for user
+   - Includes confidence warnings for uncertain data
+
+### Flow 3: Registry Data Lookup
+
+1. **Adapter Selection**
+   - Based on language, select appropriate adapter (npm, PyPI, RubyGems)
+
+2. **API Call**
+   - npm: `GET https://registry.npmjs.org/{package}`
+   - PyPI: `GET https://pypi.org/pypi/{package}/json`
+   - RubyGems: `GET https://rubygems.org/api/v1/versions/{package}.json`
+
+3. **Data Parsing**
+   - Extract version numbers and release dates
+   - Build VersionEntry array: `{ version, date }`
+   - Sort by date ascending
+
+4. **Error Handling**
+   - 404: Package not found → return error
+   - Timeout: Registry unavailable → return error
+   - Invalid data: Missing dates → use fallback logic
+
+## Data Model
+
+### StackRequest
+```typescript
+{
+  language: "node" | "python" | "ruby"
+  framework: "express" | "django" | "flask" | "rails" | "none"
+  year: number  // 2015-2025
+  extras?: string[]  // ["testing", "orm", "auth", "api", "frontend"]
+}
 ```
-User: "How did auth.js change between v1.0 and v2.0?"
-Agent: [Calls git_diff tool with from="v1.0", to="v2.0", path="auth.js"]
-Server: [Returns diff output]
-Agent: "The authentication logic was refactored to use JWT tokens instead of sessions..."
+
+### StackResponse
+```typescript
+{
+  language: Language
+  framework: Framework
+  year: number
+  runtime_version: string  // e.g., "14.15.0", "3.8.5", "2.7.2"
+  package_manager: string  // e.g., "npm@6.14.8", "pip@20.3.3"
+  packages: StackPackage[]
+  notes?: string  // Historical context and warnings
+}
 ```
 
-## MVP Supported Stacks
+### StackPackage
+```typescript
+{
+  name: string
+  version: string
+  category?: string  // "core", "testing", "orm", "auth", etc.
+  notes?: string  // Package-specific context
+  releasedAt?: string  // ISO date
+  confidence?: number  // 0.0-1.0 (0.5 = fallback, 0.9 = accurate)
+}
+```
 
-### Node.js / Express
-- Runtime: Node.js 18+
-- MCP SDK: @modelcontextprotocol/sdk
-- Git execution: child_process with git CLI
-- Package manager: npm or yarn
+### Confidence Scoring
+- **0.9**: Version found within target year (high confidence)
+- **0.5**: Fallback to earliest available version (low confidence)
+- **< 0.8**: Triggers Haunted Mode warning in UI
 
-### Python / Django / Flask
-- Runtime: Python 3.8+
-- MCP SDK: mcp Python package
-- Git execution: subprocess with git CLI or GitPython library
-- Package manager: pip or uv
+## UI Features
 
-### Ruby / Rails
-- Runtime: Ruby 3.0+
-- MCP SDK: ruby-mcp gem (or direct stdio implementation)
-- Git execution: Open3 with git CLI or rugged gem
-- Package manager: bundler
+### Haunted Mode
+- Toggle switch: "🦇 Haunted Mode (show warnings)"
+- When enabled:
+  - Packages with confidence < 0.8 get orange border
+  - Warning icon ⚠️ displayed next to package name
+  - Helps users identify uncertain version recommendations
 
-## Core MCP Tools
+### Kiroween Theme
+- Dark background (#1a1a2e)
+- Purple (#7b2cbf) and orange (#ff6b35) accents
+- Ghost 👻 and pumpkin 🎃 icons
+- Gradient buttons with hover effects
+- Card-based layouts with shadows
 
-1. **git_log**: List commits with filters (author, date range, file path)
-2. **git_show**: Display commit details and file contents at specific commits
-3. **git_diff**: Compare files or commits
-4. **git_blame**: Show line-by-line commit attribution
-5. **list_branches**: List all branches and tags
-6. **get_file_at_commit**: Retrieve file content at a specific point in history
+### Form Validation
+- Year must be 2015-2025
+- Language and framework required
+- Extras optional (comma-separated)
+- Real-time error messages
+- Loading states during API calls
 
-## Non-Functional Constraints
+## Error Cases
+
+### Invalid Input
+- **Year out of range**: Return 400 with `year_out_of_range` error
+- **Missing required fields**: Return 400 with `invalid_input` error
+- **Invalid language/framework**: Return 400 with `invalid_input` error
+
+### Registry Failures
+- **Package not found**: Include in response with "unknown" version
+- **Registry timeout**: Return 500 with `internal_error` and retry suggestion
+- **Rate limiting**: Return 429 with retry-after header
+
+### Unsupported Combinations
+- **Framework mismatch**: e.g., Django with Node.js → Return 400
+- **Unknown extras**: Ignore silently or return warning in notes
+
+### Data Quality Issues
+- **Missing release dates**: Use fallback logic, set confidence to 0.5
+- **Incomplete version history**: Return available data with warning
+- **No versions in range**: Return earliest version with low confidence
+
+## Non-Functional Requirements
 
 ### Performance
-- Git operations must complete within 5 seconds for typical repositories
-- Support repositories up to 10,000 commits
-- Limit diff output to 10,000 lines to prevent memory issues
-
-### Security
-- Read-only operations only - no modifications to repository
-- Validate all file paths to prevent directory traversal
-- Sanitize Git command inputs to prevent command injection
-- Run with minimal file system permissions
-
-### Compatibility
-- Requires Git 2.20+ installed on system
-- Must work with local repositories only (no remote operations)
-- Support standard Git repository structures
-- Cross-platform: Windows, macOS, Linux
+- API response time < 3 seconds for typical requests
+- Registry lookups cached for 1 hour
+- Parallel registry queries when possible
+- Web UI loads in < 2 seconds
 
 ### Reliability
-- Graceful error handling for invalid commits or missing files
-- Clear error messages for Git command failures
-- Validate repository exists before executing commands
-- Handle edge cases (empty repos, detached HEAD, etc.)
+- Graceful degradation when registries unavailable
+- Clear error messages with actionable guidance
+- Fallback to static version data if all registries fail
+- No crashes on invalid input
 
 ### Usability
-- JSON-formatted responses for easy parsing
-- Consistent error response structure
-- Tool descriptions clear enough for AI agents to use autonomously
-- Minimal configuration required (auto-detect repository path)
+- Intuitive form with sensible defaults
+- Keyboard-friendly navigation
+- Clear confidence indicators
+- Historical context in notes field
+- Mobile-responsive design
+
+### Security
+- Input validation on all fields
+- No code execution or eval
+- CORS enabled for web UI
+- Rate limiting on API endpoints
+- Sanitized error messages (no stack traces)
+
+### Maintainability
+- Shared types across API, web, and MCP server
+- Modular adapter pattern for registries
+- Clear separation of concerns
+- Comprehensive error handling
+- Documented API endpoints
 
 ## Success Criteria
 
-- AI agent can successfully query Git history without human intervention
-- All 6 core tools function correctly across supported languages
-- Server handles errors gracefully without crashing
-- Installation takes less than 5 minutes per stack
-- Demo showcases at least 3 different time-travel queries
+- User can generate accurate stacks for any supported language/framework/year
+- Confidence scores accurately reflect data quality
+- Haunted Mode correctly highlights uncertain packages
+- API responds within 3 seconds for 95% of requests
+- Clear error messages for all failure cases
+- Web UI works on desktop and mobile browsers
+- MCP integration enables conversational queries
+- Zero crashes or unhandled exceptions in production

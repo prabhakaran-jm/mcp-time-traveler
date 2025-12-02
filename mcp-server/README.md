@@ -19,9 +19,10 @@ Add to your Kiro `mcp.json`:
 ```json
 {
   "mcpServers": {
-    "time-traveler": {
+    "mcp-time-traveler": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-server/dist/index.js"]
+      "args": ["./dist/index.js"],
+      "cwd": "./mcp-server"
     }
   }
 }

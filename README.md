@@ -2,6 +2,8 @@
 
 > Travel back in time to recreate historically accurate developer environments
 
+*Submitted for the **Frankenstein** category in the 2025 Kiroween Hackathon.*
+
 [![Kiroween 2025](https://img.shields.io/badge/Kiroween-2025-purple)](https://kiro.ai)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![MCP](https://img.shields.io/badge/MCP-Server-orange)](https://modelcontextprotocol.io/)
@@ -25,6 +27,15 @@ curl -X POST https://mcp-time-traveler-api-04b9f0b0b1ae.herokuapp.com/api/genera
   }'
 ```
 
+## 🎥 Demo Video
+
+A 3-minute walkthrough of MCP Time-Traveler, including:
+- Frontend demo (Vercel)
+- API call (Heroku)
+- How Kiro, specs, hooks, steering, and MCP fit together
+
+[Watch the 3-minute demo on YouTube](https://youtu.be/REPLACE_WITH_YOUR_VIDEO_ID)
+
 ## Overview
 
 **MCP Time-Traveler** is a Kiroween hackathon project that generates historically accurate technology stacks for any year between 2015-2025. It fetches real package versions from npm, PyPI, and RubyGems registries, applies intelligent version-picking algorithms, and presents results with confidence scoring.
@@ -41,6 +52,17 @@ curl -X POST https://mcp-time-traveler-api-04b9f0b0b1ae.herokuapp.com/api/genera
 - Node.js (Express)
 - Python (Django, Flask)
 - Ruby (Rails)
+
+## 🧟 The Frankenstein Story
+
+MCP Time-Traveler stitches together:
+- **The Brain** – the MCP server that reasons over registry history
+- **The Heart** – the Express API pumping data between MCP and the web
+- **The Limbs** – adapters reaching into npm, PyPI, and RubyGems
+- **The Eyes** – the version picker that sees across years
+- **The Skin** – the Kiroween-themed React UI on Vercel
+
+Each piece was built separately, then wired together with Kiro's specs, hooks, and steering until the creature came alive as a single system.
 
 ## How It Works
 
@@ -351,7 +373,7 @@ This project was built entirely using **Kiro AI** as the primary development too
 - Hooks defined in `.kiro/hooks/` and triggered via Kiro UI
 
 ### 🎨 Steering Documents
-- Coding style guide in `.kiro/steering/coding-style.md`
+- [Coding Style Guide](./.kiro/steering/coding-style.md) – steering doc that keeps generated code consistent
 - Enforces small functions, clear naming, and TypeScript conventions
 - Guides all code generation for consistency
 
@@ -366,6 +388,13 @@ This project was built entirely using **Kiro AI** as the primary development too
 - Context-aware code generation
 
 **Result:** A complete full-stack application built in hours, not days, with consistent code quality and comprehensive documentation.
+
+### 📊 Development Stats with Kiro
+
+- Built as a solo developer with Kiro as the primary IDE
+- Project structure, MCP server skeleton, and first API routes were all generated via vibe coding
+- Specs in `.kiro/specs` were iterated several times and used to regenerate types and handlers
+- Hooks and steering docs were created with Kiro's guidance to keep the monorepo consistent
 
 ## MCP Server Usage
 
