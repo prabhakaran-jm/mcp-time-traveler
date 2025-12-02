@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
-import { requestHistoricalStack } from "../services/mcpClient.js";
-import { StackRequest } from "../types/stack.js";
+import { requestHistoricalStack } from "../services/mcpClient";
+import { StackRequest } from "../types/stack";
 
 const router = Router();
 

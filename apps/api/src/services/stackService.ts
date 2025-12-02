@@ -1,4 +1,4 @@
-import { StackRequest, StackResponse, Package } from "../types/stack.js";
+import { StackRequest, StackResponse, Package } from "../types/stack";
 
 const RUNTIME_VERSIONS: Record<string, Record<number, string>> = {
   node: {

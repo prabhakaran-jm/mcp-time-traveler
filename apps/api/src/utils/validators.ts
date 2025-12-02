@@ -1,8 +1,8 @@
-import type { Language, Framework, ExtraCategory, StackRequest, ErrorResponse } from "../types/stack.js";
+import type { StackRequest, ErrorResponse } from "../types/stack";
 
-const VALID_LANGUAGES: Language[] = ["node", "python", "ruby"];
-const VALID_FRAMEWORKS: Framework[] = ["express", "django", "flask", "rails", "none"];
-const VALID_EXTRAS: ExtraCategory[] = ["testing", "orm", "auth", "api", "frontend"];
+const VALID_LANGUAGES = ["node", "python", "ruby"] as const;
+const VALID_FRAMEWORKS = ["express", "django", "flask", "rails", "none"] as const;
+const VALID_EXTRAS = ["testing", "orm", "auth", "api", "frontend"] as const;
 const MIN_YEAR = 2015;
 const MAX_YEAR = 2025;
 
@@ -23,7 +23,7 @@ export function validateStackRequest(input: unknown): StackRequest | ErrorRespon
     };
   }
 
-  if (!VALID_LANGUAGES.includes(req.language as Language)) {
+  if (!VALID_LANGUAGES.includes(req.language as any)) {
     return {
       error: "invalid_input",
       message: `Invalid language. Must be one of: ${VALID_LANGUAGES.join(", ")}`
@@ -37,7 +37,7 @@ export function validateStackRequest(input: unknown): StackRequest | ErrorRespon
     };
   }
 
-  if (!VALID_FRAMEWORKS.includes(req.framework as Framework)) {
+  if (!VALID_FRAMEWORKS.includes(req.framework as any)) {
     return {
       error: "invalid_input",
       message: `Invalid framework. Must be one of: ${VALID_FRAMEWORKS.join(", ")}`
@@ -59,7 +59,7 @@ export function validateStackRequest(input: unknown): StackRequest | ErrorRespon
     };
   }
 
-  let extras: ExtraCategory[] = [];
+  let extras: string[] = [];
   if (req.extras) {
     if (!Array.isArray(req.extras)) {
       return {
@@ -69,19 +69,19 @@ export function validateStackRequest(input: unknown): StackRequest | ErrorRespon
     }
 
     for (const extra of req.extras) {
-      if (typeof extra !== "string" || !VALID_EXTRAS.includes(extra as ExtraCategory)) {
+      if (typeof extra !== "string" || !VALID_EXTRAS.includes(extra as any)) {
         return {
           error: "invalid_input",
           message: `Invalid extra category. Must be one of: ${VALID_EXTRAS.join(", ")}`
         };
       }
     }
-    extras = req.extras as ExtraCategory[];
+    extras = req.extras as string[];
   }
 
   return {
-    language: req.language as Language,
-    framework: req.framework as Framework,
+    language: req.language as any,
+    framework: req.framework as any,
     year: req.year,
     extras
   };

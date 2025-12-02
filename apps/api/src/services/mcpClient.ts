@@ -1,5 +1,5 @@
-import { StackRequest, StackResponse, ErrorResponse } from "../types/stack.js";
-import { generateHistoricalStack } from "./stackService.js";
+import { StackRequest, StackResponse, ErrorResponse } from "../types/stack";
+import { generateHistoricalStack } from "./stackService";
 
 export async function requestHistoricalStack(
   req: StackRequest

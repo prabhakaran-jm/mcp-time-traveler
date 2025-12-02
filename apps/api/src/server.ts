@@ -1,7 +1,7 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import generateRouter from "./routes/generate.js";
+import generateRouter from "./routes/generate";
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.use("/api", generateRouter);
 
-app.get("/health", (req, res) => {
+app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
