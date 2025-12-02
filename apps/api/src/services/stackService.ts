@@ -161,21 +161,23 @@ export async function generateHistoricalStack(
 
   if (extras.includes("testing")) {
     const testPkg = language === "node" ? "jest" : language === "python" ? "pytest" : "rspec";
+    const testConfidence = year < 2018 ? 50 : 90;
     packages.push({
       name: testPkg,
       version: "latest",
       category: "testing",
-      notes: "Testing framework"
+      notes: `Testing framework (confidence: ${testConfidence}%)`
     });
   }
 
   if (extras.includes("orm")) {
     const ormPkg = language === "node" ? "sequelize" : language === "python" ? "sqlalchemy" : "activerecord";
+    const ormConfidence = year < 2017 ? 60 : 85;
     packages.push({
       name: ormPkg,
       version: "latest",
       category: "orm",
-      notes: "ORM for database access"
+      notes: `ORM for database access (confidence: ${ormConfidence}%)`
     });
   }
 
