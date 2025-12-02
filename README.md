@@ -573,7 +573,7 @@ MIT License - see [LICENSE](./LICENSE) for details.
 **Author:** Prabhakaran Jayaraman Masani
 
 **Powered by:**
-- [Kiro AI](https://kiro.ai) - AI-powered IDE
+- [Kiro Dev](https://kiro.dev) - AI-powered IDE
 - [Model Context Protocol](https://modelcontextprotocol.io/) - MCP SDK
 - npm, PyPI, RubyGems - Package registries
 
