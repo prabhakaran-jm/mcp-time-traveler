@@ -6,19 +6,14 @@ import { StackResponse, ErrorResponse } from "../types/stack";
 
 export default function Home() {
   const [result, setResult] = useState<StackResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [hauntedMode, setHauntedMode] = useState(false);
-
-  // NEW 👇
-  const [loading, setLoading] = useState(false);
 
   function handleResult(data: StackResponse | ErrorResponse): void {
     if ("error" in data) {
-      setError(data.message);
+      // On error we clear the previous result; the form shows the error message.
       setResult(null);
     } else {
       setResult(data);
-      setError(null);
     }
   }
 
@@ -41,15 +36,7 @@ export default function Home() {
           </label>
         </div>
 
-        {/* Pass loading setter down to the form */}
         <EnvironmentForm onResult={handleResult} />
-
-        {/* 🔥 NEW spooky loading message */}
-        {loading && (
-          <div className="mt-4 text-sm text-amber-300">
-            ⏳ Traveling through the code crypts...
-          </div>
-        )}
 
         {result && <ResultPanel result={result} hauntedMode={hauntedMode} />}
       </main>
