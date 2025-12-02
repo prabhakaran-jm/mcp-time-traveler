@@ -29,27 +29,20 @@ curl -X POST https://mcp-time-traveler-api-04b9f0b0b1ae.herokuapp.com/api/genera
 
 ## 🎥 Demo Video
 
-A 3-minute walkthrough of MCP Time-Traveler, including:
-- Frontend demo (Vercel)
-- API call (Heroku)
-- How Kiro, specs, hooks, steering, and MCP fit together
+[Watch the 3-minute demo on YouTube](https://youtu.be/bdTDcGAJLZU)
 
-[Watch the 3-minute demo on YouTube](https://youtu.be/YOUR_VIDEO_ID_HERE)
-
-> **Note**: Replace `YOUR_VIDEO_ID_HERE` with your actual YouTube video ID before submission.
 
 ## 📸 Screenshots
 
-![Main UI Interface](./docs/ui-example.png)
+![Main UI Interface](./docs/frontend.png)
 *Environment form with language, framework, and year selection*
 
 ![Haunted Mode Feature](./docs/haunted-mode.png)
 *Haunted Mode highlights packages with uncertain version data*
 
-![MCP Integration](./docs/mcp-integration.png)
+![MCP Tools](./docs/mcp-tools.png)
 *MCP server configuration in Kiro IDE*
 
-> See [docs/SCREENSHOTS.md](./docs/SCREENSHOTS.md) for a complete guide on capturing and adding screenshots.
 
 ## Overview
 
