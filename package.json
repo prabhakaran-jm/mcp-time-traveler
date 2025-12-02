@@ -1,0 +1,10 @@
+{
+  "name": "mcp-time-traveler",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd apps/api && npm install",
+    "build": "cd apps/api && npm run build",
+    "start": "cd apps/api && npm run start"
+  }
+}
