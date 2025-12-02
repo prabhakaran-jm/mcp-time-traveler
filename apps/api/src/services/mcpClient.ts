@@ -1,4 +1,6 @@
 // Generated with Kiro AI, guided by .kiro/specs/app-spec.md and .kiro/specs/mcp-spec.md
+// Frankenstein's Lab: This stitches the Heart (API) to the Brain (MCP server)
+// The API doesn't call registries directly; it always goes through the MCP layer per steering doc
 import { StackRequest, StackResponse, ErrorResponse } from "../types/stack";
 import { generateHistoricalStack } from "./stackService";
 

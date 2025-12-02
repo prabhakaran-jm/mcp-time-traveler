@@ -34,7 +34,9 @@ A 3-minute walkthrough of MCP Time-Traveler, including:
 - API call (Heroku)
 - How Kiro, specs, hooks, steering, and MCP fit together
 
-[Watch the 3-minute demo on YouTube](https://youtu.be/REPLACE_WITH_YOUR_VIDEO_ID)
+[Watch the 3-minute demo on YouTube](https://youtu.be/YOUR_VIDEO_ID_HERE)
+
+> **Note**: Replace `YOUR_VIDEO_ID_HERE` with your actual YouTube video ID before submission.
 
 ## Overview
 
@@ -61,6 +63,71 @@ MCP Time-Traveler stitches together:
 - **The Limbs** – adapters reaching into npm, PyPI, and RubyGems
 - **The Eyes** – the version picker that sees across years
 - **The Skin** – the Kiroween-themed React UI on Vercel
+- **The Nervous System** – shared TypeScript types connecting all parts
+- **The Soul** – Kiro's specs, hooks, and steering that brought it to life
+
+### Frankenstein's Lab Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    FRANKENSTEIN'S LAB                       │
+│                  (Built with Kiro AI)                        │
+└─────────────────────────────────────────────────────────────┘
+
+    ┌──────────────┐
+    │  THE BRAIN   │  MCP Server (mcp-server/)
+    │              │  - Reasons over registry history
+    │  🧠          │  - Exposes get_historical_stack tool
+    └──────┬───────┘
+           │
+           │ (stdio transport)
+           │
+    ┌──────▼───────┐
+    │  THE HEART   │  Express API (apps/api/)
+    │              │  - Pumps data between MCP and web
+    │  ❤️          │  - Validates requests
+    └──────┬───────┘
+           │
+           │ (HTTP REST)
+           │
+    ┌──────▼───────┐
+    │  THE SKIN    │  React UI (apps/web/)
+    │              │  - Kiroween-themed interface
+    │  👻          │  - Haunted Mode warnings
+    └──────────────┘
+
+    ┌──────────────┐
+    │  THE LIMBS   │  Registry Adapters
+    │              │  - npmAdapter.ts
+    │  🦵          │  - pypiAdapter.ts
+    │              │  - rubygemsAdapter.ts
+    └──────┬───────┘
+           │
+           │ (HTTP API calls)
+           │
+    ┌──────▼───────┐
+    │  REGISTRIES  │  npm, PyPI, RubyGems
+    └──────────────┘
+
+    ┌──────────────┐
+    │  THE EYES    │  Version Picker (core/versionPicker.ts)
+    │              │  - Sees across years
+    │  👁️          │  - Calculates confidence scores
+    └──────────────┘
+
+    ┌──────────────┐
+    │  NERVOUS     │  Shared Types (shared/types/)
+    │  SYSTEM      │  - StackRequest, StackResponse
+    │              │  - Connects all parts
+    └──────────────┘
+
+    ┌──────────────┐
+    │  THE SOUL    │  Kiro (.kiro/)
+    │              │  - Specs guide development
+    │  ✨          │  - Hooks automate checks
+    │              │  - Steering enforces quality
+    └──────────────┘
+```
 
 Each piece was built separately, then wired together with Kiro's specs, hooks, and steering until the creature came alive as a single system.
 
@@ -198,12 +265,26 @@ mcp-time-traveler/
 
 ## Spec Compliance
 
-| Spec section                           | Implementation file                                        |
-|----------------------------------------|------------------------------------------------------------|
-| App input/output (StackRequest/Response) | `shared/types/stack.ts` and `apps/api/src/routes/generate.ts` |
-| MCP tool schema (`get_historical_stack`) | `mcp-server/src/index.ts`                                 |
-| Confidence scoring                     | `mcp-server/src/core/versionPicker.ts`                    |
-| Haunted Mode behavior                  | `apps/web/src/components/ResultPanel.tsx` and `apps/web/src/pages/Home.tsx` |
+This section demonstrates how the implementation follows the specifications in `.kiro/specs/`. All code was generated and validated against these specs using Kiro's spec-driven development workflow.
+
+| Spec section                           | Implementation file                                        | Compliance Notes |
+|----------------------------------------|------------------------------------------------------------|------------------|
+| App input/output (StackRequest/Response) | `shared/types/stack.ts` and `apps/api/src/routes/generate.ts` | Types match spec exactly, including optional `extras` field |
+| MCP tool schema (`get_historical_stack`) | `mcp-server/src/index.ts`                                 | Input/output schemas match `mcp-spec.md` line-by-line |
+| Confidence scoring (0.5 fallback, 0.9 accurate) | `mcp-server/src/core/versionPicker.ts`                    | `pickVersionByYear()` returns 0.9 for versions in range, 0.5 for fallback |
+| Haunted Mode behavior (confidence < 0.8) | `apps/web/src/components/ResultPanel.tsx` and `apps/web/src/pages/Home.tsx` | `isLowConfidence()` checks for confidence < 80% in notes or "may not have existed" |
+| Registry adapters (npm, PyPI, RubyGems) | `mcp-server/src/adapters/` (npmAdapter.ts, pypiAdapter.ts, rubygemsAdapter.ts) | Each adapter implements `fetch*PackageVersions()` returning `VersionEntry[]` |
+| Version selection by year              | `mcp-server/src/core/versionPicker.ts`                    | Filters versions by release date, picks latest before target year end |
+| Error handling (invalid_input, year_out_of_range) | `apps/api/src/routes/generate.ts` and `mcp-server/src/index.ts` | Both validate year range (2015-2025) and return spec-compliant error objects |
+| Runtime version mapping                | `apps/api/src/services/stackService.ts` and `mcp-server/src/tools/getHistoricalStack.ts` | `RUNTIME_VERSIONS` constant matches spec's version rules by year |
+| Package manager mapping                | Same files as above | `PACKAGE_MANAGERS` constant matches spec's package manager rules |
+
+**Spec Validation Process:**
+1. Specs written in `.kiro/specs/app-spec.md` and `.kiro/specs/mcp-spec.md`
+2. `gen:scaffold` hook validates types match spec schemas
+3. Code generation follows spec requirements
+4. Pre-commit hook ensures type safety
+5. Manual review confirms spec compliance (this table)
 
 
 ## Getting Started (Local Dev)
@@ -367,6 +448,37 @@ curl -X POST http://localhost:4000/api/generate \
 ### MCP Integration
 ![Kiro MCP Tool](./docs/mcp-integration.png)
 *Using the tool in Kiro AI assistant*
+
+**Using the MCP Tool in Kiro:**
+
+1. Configure the MCP server in `.kiro/mcp/time_traveler.json` (already included in this repo)
+2. Restart Kiro to load the MCP server
+3. In Kiro chat, ask: "What packages were popular for Node.js + Express in 2020?"
+4. Kiro will use the `get_historical_stack` tool automatically
+5. The response includes accurate version data with confidence scores
+
+**Example MCP Tool Call:**
+```
+User: "What was the Node.js stack like in 2018?"
+
+Kiro (using get_historical_stack tool):
+{
+  "language": "node",
+  "framework": "express",
+  "year": 2018,
+  "runtime_version": "10.24.1",
+  "package_manager": "npm@6.14.18",
+  "packages": [
+    {
+      "name": "express",
+      "version": "4.16.4",
+      "category": "core",
+      "notes": "express framework"
+    }
+  ],
+  "notes": "Node 10 LTS (Dubnium) was released in October 2018..."
+}
+```
 
 ## How Kiro Was Used
 

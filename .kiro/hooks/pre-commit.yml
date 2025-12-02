@@ -7,28 +7,30 @@ action:
   command: |
     echo "Running pre-commit checks..."
     
+    # Cross-platform type checking for all modules
+    # Uses subshells to avoid directory navigation issues
+    
     # Check apps/api
     if [ -d "apps/api" ]; then
       echo "Checking apps/api..."
-      cd apps/api
-      npm run type-check || exit 1
-      cd ../..
+      (cd apps/api && npm run type-check) || exit 1
     fi
     
     # Check mcp-server
     if [ -d "mcp-server" ]; then
       echo "Checking mcp-server..."
-      cd mcp-server
-      npm run type-check || exit 1
-      cd ..
+      (cd mcp-server && npm run type-check) || exit 1
     fi
     
     # Check apps/web
     if [ -d "apps/web" ]; then
       echo "Checking apps/web..."
-      cd apps/web
-      npm run type-check || exit 1
-      cd ../..
+      (cd apps/web && npm run type-check) || exit 1
     fi
     
     echo "All checks passed!"
+    
+    # Note: On Windows PowerShell, if bash is not available, run manually:
+    # cd apps/api; npm run type-check
+    # cd mcp-server; npm run type-check
+    # cd apps/web; npm run type-check

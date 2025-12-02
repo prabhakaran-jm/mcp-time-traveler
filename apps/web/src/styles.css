@@ -42,6 +42,27 @@ main {
   padding: 35px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   border: 2px solid #7b2cbf;
+  position: relative;
+}
+
+/* Frankenstein's Lab: Decorative "stitch" corners */
+main::before,
+main::after {
+  content: "✕";
+  position: absolute;
+  color: #7b2cbf;
+  font-size: 0.8rem;
+  opacity: 0.3;
+}
+
+main::before {
+  top: 8px;
+  left: 8px;
+}
+
+main::after {
+  bottom: 8px;
+  right: 8px;
 }
 
 .form {
@@ -152,6 +173,25 @@ button:disabled {
 
 .result-section {
   margin-bottom: 30px;
+  position: relative;
+}
+
+/* Frankenstein's Lab: Subtle "stitch marks" between sections */
+.result-section:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    #7b2cbf 0px,
+    #7b2cbf 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.4;
 }
 
 .result-section h3 {

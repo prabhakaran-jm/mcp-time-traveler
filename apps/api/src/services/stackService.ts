@@ -1,6 +1,7 @@
 // AI-GEN: Implemented with Kiro using .kiro/specs/app-spec.md as the source of truth.
-// AI-GEN: This service connects the Express API to the MCP server, acting as the
-// bridge between user input (language, framework, year, extras) and the MCP tool.
+// Frankenstein's Lab: This is the core stack generation logic that stitches together
+// runtime versions, package managers, frameworks, and extras into a complete stack.
+// The Heart (API) uses this service to generate stacks before sending to the Brain (MCP).
 // AI-GEN: Kiro generated the structure for validating inputs, sending the request
 // to the getHistoricalStack MCP tool, and shaping the final StackResponse payload.
 // AI-GEN: The logic here abstracts away the complexity of communicating with the

@@ -1,3 +1,6 @@
+// Frankenstein's Lab: The Brain's core tool - stitches together registry adapters (Limbs),
+// version picker (Eyes), and confidence scoring to generate historical stacks
+// Generated with Kiro AI, guided by .kiro/specs/mcp-spec.md
 import { StackRequest, StackResponse, Package } from "../core/types.js";
 import { pickVersionByYear } from "../core/versionPicker.js";
 import { fetchNpmPackageVersions } from "../adapters/npmAdapter.js";

@@ -206,3 +206,155 @@ Let Prettier handle formatting automatically.
 - Shared types do not contain logic, only data shapes.
 - The API does not call registries directly; it always goes through the MCP layer.
 - UI components stay presentational; data fetching lives in hooks or services.
+
+## Common Violations and Fixes
+
+### Violation: Magic Numbers
+
+**Bad:**
+```typescript
+if (year < 2015 || year > 2025) {
+  throw new Error("Invalid year");
+}
+
+const maxRetries = 3;
+if (attempts > 3) {
+  // ...
+}
+```
+
+**Good:**
+```typescript
+const MIN_YEAR = 2015;
+const MAX_YEAR = 2025;
+const MAX_RETRIES = 3;
+
+if (year < MIN_YEAR || year > MAX_YEAR) {
+  throw new Error("Invalid year");
+}
+
+if (attempts > MAX_RETRIES) {
+  // ...
+}
+```
+
+### Violation: Missing Return Types
+
+**Bad:**
+```typescript
+function getPackageVersion(packageName: string) {
+  return fetch(`/api/package/${packageName}`);
+}
+```
+
+**Good:**
+```typescript
+function getPackageVersion(packageName: string): Promise<PackageVersion> {
+  return fetch(`/api/package/${packageName}`);
+}
+```
+
+### Violation: Deep Nesting
+
+**Bad:**
+```typescript
+function processStack(request: StackRequest) {
+  if (request.language) {
+    if (request.framework) {
+      if (request.year >= 2015) {
+        if (request.year <= 2025) {
+          // actual logic here
+        }
+      }
+    }
+  }
+}
+```
+
+**Good:**
+```typescript
+function processStack(request: StackRequest): StackResponse {
+  if (!request.language || !request.framework) {
+    throw new ValidationError("Missing required fields");
+  }
+  
+  if (request.year < MIN_YEAR || request.year > MAX_YEAR) {
+    throw new ValidationError("Year out of range");
+  }
+  
+  // actual logic here
+}
+```
+
+### Violation: Using `any` Type
+
+**Bad:**
+```typescript
+function parseResponse(data: any): StackResponse {
+  return {
+    language: data.language,
+    // ...
+  };
+}
+```
+
+**Good:**
+```typescript
+function parseResponse(data: unknown): StackResponse {
+  if (!isStackResponse(data)) {
+    throw new Error("Invalid response format");
+  }
+  return data;
+}
+
+function isStackResponse(data: unknown): data is StackResponse {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "language" in data &&
+    "framework" in data &&
+    "year" in data
+  );
+}
+```
+
+### Violation: Large Function
+
+**Bad:**
+```typescript
+function generateStack(request: StackRequest): StackResponse {
+  // 50+ lines of logic mixing validation, fetching, processing, formatting
+  const runtimeVersion = RUNTIME_VERSIONS[request.language]?.[request.year] || "unknown";
+  const packageManager = PACKAGE_MANAGERS[request.language]?.[request.year] || "unknown";
+  const packages: Package[] = [];
+  // ... 40 more lines
+  return { /* ... */ };
+}
+```
+
+**Good:**
+```typescript
+function generateStack(request: StackRequest): StackResponse {
+  validateRequest(request);
+  const runtimeVersion = getRuntimeVersion(request.language, request.year);
+  const packageManager = getPackageManager(request.language, request.year);
+  const packages = buildPackageList(request);
+  return formatResponse(request, runtimeVersion, packageManager, packages);
+}
+
+function validateRequest(request: StackRequest): void {
+  // validation logic
+}
+
+function getRuntimeVersion(language: string, year: number): string {
+  // version lookup logic
+}
+
+function buildPackageList(request: StackRequest): Package[] {
+  // package building logic
+}
+
+function formatResponse(/* ... */): StackResponse {
+  // formatting logic
+}
+```

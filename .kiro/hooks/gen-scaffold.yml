@@ -23,6 +23,13 @@ action:
     3. Ensure type definitions match MCP tool schemas
     4. Verify stub implementations exist for all tools
     5. Check basic test file structure
+    6. Validate spec compliance:
+       - StackRequest type matches app-spec.md data model (language, framework, year, extras?)
+       - StackResponse type matches app-spec.md (runtime_version, package_manager, packages, notes?)
+       - StackPackage type includes name, version, category?, notes?, confidence?
+       - MCP tool schema matches mcp-spec.md input/output schemas
+       - Confidence scoring values (0.5 for fallback, 0.9 for accurate) are implemented
+       - Haunted Mode logic checks confidence < 0.8 as per spec
 
     Propose any new files needed. Do not overwrite existing implementation logic, only update structure and types.
 
