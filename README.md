@@ -6,6 +6,25 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![MCP](https://img.shields.io/badge/MCP-Server-orange)](https://modelcontextprotocol.io/)
 
+## Live Demo
+
+- **Web UI**: https://mcp-time-traveler.vercel.app/
+- **API (POST)**: https://mcp-time-traveler-api-04b9f0b0b1ae.herokuapp.com/api/generate
+
+### Quick Try (Node + Express 2015)
+
+**Request:**
+```bash
+curl -X POST https://mcp-time-traveler-api-04b9f0b0b1ae.herokuapp.com/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "language": "node",
+    "framework": "express",
+    "year": 2015,
+    "extras": ["testing"]
+  }'
+```
+
 ## Overview
 
 **MCP Time-Traveler** is a Kiroween hackathon project that generates historically accurate technology stacks for any year between 2015-2025. It fetches real package versions from npm, PyPI, and RubyGems registries, applies intelligent version-picking algorithms, and presents results with confidence scoring.
@@ -374,8 +393,6 @@ What packages were popular for Node.js + Express in 2020?
 Kiro will use the `get_historical_stack` tool to fetch accurate version data.
 
 ## Testing Haunted Mode
-
-See [TESTING_HAUNTED_MODE.md](./TESTING_HAUNTED_MODE.md) for detailed testing instructions.
 
 **Quick Test:**
 1. Enable "🦇 Haunted Mode" checkbox
