@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { StackResponse, ErrorResponse } from "../types/stack";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+
 interface EnvironmentFormProps {
   onResult: (result: StackResponse | ErrorResponse) => void;
 }
@@ -24,7 +26,7 @@ export default function EnvironmentForm({ onResult }: EnvironmentFormProps) {
       .filter(s => s.length > 0);
 
     try {
-      const response = await fetch("http://localhost:4000/api/generate", {
+      const response = await fetch(`${API_BASE_URL}/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
